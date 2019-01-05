@@ -1,0 +1,28 @@
+{
+  "name": "bully",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raeesbhatti/bully.git"
+  },
+  "keywords": [
+    "vbulletin",
+    "puppeteer",
+    "scrape"
+  ],
+  "author": "Raees Iqbal",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/raeesbhatti/bully/issues"
+  },
+  "homepage": "https://github.com/raeesbhatti/bully#readme",
+  "dependencies": {
+    "puppeteer": "^1.11.0"
+  }
+}
