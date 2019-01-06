@@ -62,11 +62,23 @@ const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
 
 
     if (pageKind === 'user' && !data.hasOwnProperty(id)) {
-        const imList = await page.$('#instant_messaging_list')
-        if (imList) {
-            const text = await (await imList.getProperty('textContent')).jsonValue();
-            data[id] = text.trim()
+        const userData = {basicInfo: null, contact: null, stats: null}
+        const basicInfo = await page.$('#view-aboutme > .subsection')
+        if (basicInfo) {
+            const text = await (await basicInfo.getProperty('textContent')).jsonValue();
+            userData.basicInfo = text.trim()
         }
+        const contact = await page.$('#view-contactinfo')
+        if (contact) {
+            const text = await (await contact.getProperty('textContent')).jsonValue();
+            userData.contact = text.trim()
+        }
+        const stats = await page.$('#view-stats')
+        if (stats) {
+            const text = await (await stats.getProperty('textContent')).jsonValue();
+            userData.stats = text.trim()
+        }
+        data[id] = userData
     }
 
     if (users.length) {
