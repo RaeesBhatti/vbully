@@ -1,2 +1,2 @@
-# bully
-Scrapes data off vBulletin websites
+# Bully
+Scrapes data off vBulletin websites.
