@@ -61,13 +61,11 @@ const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
         .forEach(id => groups.push(id))
 
 
-    if (pageKind === 'user') {
+    if (pageKind === 'user' && !data.hasOwnProperty(id)) {
         const imList = await page.$('#instant_messaging_list')
         if (imList) {
             const text = await (await imList.getProperty('textContent')).jsonValue();
-            if (!data.hasOwnProperty(id)){
-                data[id] = text.trim()
-            }
+            data[id] = text.trim()
         }
     }
 
