@@ -69,7 +69,6 @@ const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
         }
     }
 
-
     if (users.length) {
         const userId = users.shift()
         return findNewLinks(page, userId, 'user')
