@@ -27,7 +27,7 @@ const SITE_PASSWORD = process.env.SITE_PASSWORD;
 
 const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
     const link = `${SITE_URL}${pageKind === 'user' ? 'member.php?u=' + id : `group.php?groupid=${id}&do=viewmembers`}`
-    await page.goto(link, {timeout: 100000});
+    await page.goto(link, {timeout: 120000});
 
     if (first) {
         const userNameEl = await page.$('#vb_login_username');
@@ -40,7 +40,7 @@ const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
         await loginBtn.click({delay: 160})
     }
 
-    await page.waitFor(() => !!document.getElementById('socialgroup_members') || !!document.getElementById('userinfo'), {timeout: 100000});
+    await page.waitFor(() => !!document.getElementById('socialgroup_members') || !!document.getElementById('userinfo'), {timeout: 120000});
 
     if (pageKind === 'user') {
         usersVisited.push(id)
