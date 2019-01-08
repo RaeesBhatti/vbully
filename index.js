@@ -1,13 +1,13 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 
-const users = [];
-const usersVisited = [];
+const data = require('./data.json');
 
-const groups = [];
-const groupsVisited = [];
+const users = data['users'] || [];
+const usersVisited = data['usersVisited'] || [];
 
-const data = {};
+const groups = data['groups'] || [];
+const groupsVisited = data['groupsVisited'] || [];
 
 const SITE_URL = process.env.SITE_URL;
 const SITE_USERNAME = process.env.SITE_USERNAME;
@@ -17,10 +17,10 @@ const SITE_PASSWORD = process.env.SITE_PASSWORD;
     const browser = await puppeteer.launch({headless: false});
     const page = await browser.newPage();
     page.setViewport({width: 1366, height: 768});
-    const interval = setInterval(() => fs.writeFileSync('./data.json', JSON.stringify(data)), 100000);
+    const interval = setInterval(() => fs.writeFileSync('./data.json', JSON.stringify({users, usersVisited, groups, groupsVisited, data})), 100000);
     await findNewLinks(page, '35','group',true);
     clearInterval(interval);
-    fs.writeFileSync('./data.json', JSON.stringify(data))
+    fs.writeFileSync('./data.json', JSON.stringify({users, usersVisited, groups, groupsVisited, data}))
 
     await browser.close();
 })();
