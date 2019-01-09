@@ -4,11 +4,11 @@ const fs = require('fs');
 const data = require('./data.json');
 
 const info = data['info'] || {};
-const users = data['users'] || [];
-const usersVisited = data['usersVisited'] || [];
+const users = new Set(data['users'] || []);
+const usersVisited = new Set(data['usersVisited'] || []);
 
-const groups = data['groups'] || ['35'];
-const groupsVisited = data['groupsVisited'] || [];
+const groups = new Set(data['groups'] || ['35']);
+const groupsVisited = new Set(data['groupsVisited'] || []);
 
 const SITE_URL = process.env.SITE_URL;
 const SITE_USERNAME = process.env.SITE_USERNAME;
@@ -19,7 +19,7 @@ const SITE_PASSWORD = process.env.SITE_PASSWORD;
     const page = await browser.newPage();
     page.setViewport({width: 1366, height: 768});
     const interval = setInterval(saveData, 100000);
-    await findNewLinks(page, groups.pop(),'group',true);
+    await findNewLinks(page, pullFromSet('group'),'group',true);
     clearInterval(interval);
     saveData()
 
@@ -44,22 +44,22 @@ const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
     await page.waitFor(() => !!document.getElementById('socialgroup_members') || !!document.getElementById('userinfo'), {timeout: 120000});
 
     if (pageKind === 'user') {
-        usersVisited.push(id)
+        usersVisited.add(id)
     } else {
-        groupsVisited.push(id)
+        groupsVisited.add(id)
     }
 
     const userIds = await page.$$eval('a[href^="member.php"]', ls => ls.map(a => new URL(a).searchParams.get('u')))
     userIds
         .filter(id => !!id && id.length)
-        .filter(id => !usersVisited.includes(id) && !users.includes(id))
-        .forEach(id => users.push(id))
+        .filter(id => !usersVisited.has(id) && !users.has(id))
+        .forEach(id => users.add(id))
 
     const groupIds = await page.$$eval('a[href^="group.php"]', ls => ls.map(a => new URL(a).searchParams.get('groupid')))
     groupIds
         .filter(id => !!id && id.length)
-        .filter(id => !groupsVisited.includes(id) && !groups.includes(id))
-        .forEach(id => groups.push(id))
+        .filter(id => !groupsVisited.has(id) && !groups.has(id))
+        .forEach(id => groups.add(id))
 
 
     if (pageKind === 'user' && !info.hasOwnProperty(id)) {
@@ -82,12 +82,12 @@ const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
         info[id] = userData
     }
 
-    if (users.length) {
-        const userId = users.shift()
+    if (users.size) {
+        const userId = pullFromSet('user')
         return findNewLinks(page, userId, 'user')
     }
-    if (groups.length) {
-        const groupId = groups.shift()
+    if (groups.size) {
+        const groupId = pullFromSet('group')
         return findNewLinks(page, groupId, 'group')
     }
 
@@ -95,5 +95,21 @@ const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
 }
 
 const saveData = () => {
-    return fs.writeFileSync('./data.json', JSON.stringify({users, usersVisited, groups, groupsVisited, info}))
+    return fs.writeFileSync('./data.json', JSON.stringify({
+        users: Array.from(users),
+        usersVisited: Array.from(usersVisited),
+        groups: Array.from(groups),
+        groupsVisited: Array.from(groupsVisited),
+        info,
+    }))
+}
+
+const pullFromSet = (kind = 'user') => {
+    const it = (kind === 'user' ? users : groups).values();
+    const {value, done} = it.next();
+    if (done) {
+        return;
+    }
+    (kind === 'user' ? users : groups).delete(value);
+    return value;
 }
