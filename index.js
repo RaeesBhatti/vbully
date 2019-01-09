@@ -3,6 +3,7 @@ const fs = require('fs');
 
 const data = require('./data.json');
 
+const info = data['info'] || {};
 const users = data['users'] || [];
 const usersVisited = data['usersVisited'] || [];
 
@@ -61,7 +62,7 @@ const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
         .forEach(id => groups.push(id))
 
 
-    if (pageKind === 'user' && !data.hasOwnProperty(id)) {
+    if (pageKind === 'user' && !info.hasOwnProperty(id)) {
         const userData = {basicInfo: null, contact: null, stats: null}
         const basicInfo = await page.$('#view-aboutme > .subsection')
         if (basicInfo) {
@@ -78,7 +79,7 @@ const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
             const text = await (await stats.getProperty('textContent')).jsonValue();
             userData.stats = text.trim()
         }
-        data[id] = userData
+        info[id] = userData
     }
 
     if (users.length) {
@@ -94,5 +95,5 @@ const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
 }
 
 const saveData = () => {
-    return fs.writeFileSync('./data.json', JSON.stringify({users, usersVisited, groups, groupsVisited, data: info}))
+    return fs.writeFileSync('./data.json', JSON.stringify({users, usersVisited, groups, groupsVisited, info}))
 }
