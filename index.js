@@ -6,7 +6,7 @@ const data = require('./data.json');
 const users = data['users'] || [];
 const usersVisited = data['usersVisited'] || [];
 
-const groups = data['groups'] || [];
+const groups = data['groups'] || ['35'];
 const groupsVisited = data['groupsVisited'] || [];
 
 const SITE_URL = process.env.SITE_URL;
@@ -17,8 +17,8 @@ const SITE_PASSWORD = process.env.SITE_PASSWORD;
     const browser = await puppeteer.launch({headless: false});
     const page = await browser.newPage();
     page.setViewport({width: 1366, height: 768});
-    await findNewLinks(page, '35','group',true);
     const interval = setInterval(saveData, 100000);
+    await findNewLinks(page, groups.pop(),'group',true);
     clearInterval(interval);
     saveData()
 
