@@ -12,7 +12,7 @@ Object.entries(data['info']).map(([key, obj]) => {
     if (obj.contact) {
         userEmails = userEmails.concat(obj.contact.match(/[\\t|\\n| ]?([a-zA-Z0-9\._-]+\@[a-zA-Z]+\.(com|net))/g));
     }
-    userEmails = userEmails.filter(i => !!i && !i.includes('facebook.com'));
+    userEmails = userEmails.filter(i => !!i && !i.endsWith('facebook.com'));
     if (userEmails.length) {
         emails[key] = Array.from(new Set(userEmails.map(e => e.toLowerCase().trim())));
     }
