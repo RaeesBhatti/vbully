@@ -17,4 +17,6 @@ Object.entries(data['info']).map(([key, obj]) => {
         emails[key] = Array.from(new Set(userEmails));
     }
 });
+
+fs.writeFileSync('./emails.json', JSON.stringify(emails));
 console.log(emails, Object.keys(emails).length);
