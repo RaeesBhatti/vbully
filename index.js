@@ -19,7 +19,12 @@ const SITE_PASSWORD = process.env.SITE_PASSWORD;
     const page = await browser.newPage();
     page.setViewport({width: 1366, height: 768});
     const interval = setInterval(saveData, 100000);
-    await findNewLinks(page, pullFromSet('group'),'group',true);
+    const groupId = pullFromSet('group')
+    if (groupId) {
+        await findNewLinks(page, groupId,'group',true);
+    } else {
+        await findNewLinks(page, pullFromSet('user'), 'user', true)
+    }
     clearInterval(interval);
     saveData()
 
