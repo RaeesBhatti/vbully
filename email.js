@@ -19,4 +19,18 @@ Object.entries(data['info']).map(([key, obj]) => {
 });
 
 fs.writeFileSync('./emails.json', JSON.stringify(emails));
+fs.writeFileSync('./emails.csv', Object.values(emails).map(es => es.sort(emailSort)[0]).join('\n'));
 console.log(emails, Object.keys(emails).length);
+
+function emailSort(a, b) {
+    const importance = {"gmail.com": 1, "yahoo.com": 2, "rocketmail.com": 3, "ymail.com": 4};
+
+    const importanceOfA = importance[a.split('@')[1]];
+    const importanceOfB = importance[b.split('@')[1]];
+
+    if (importanceOfA && !importanceOfB) return -1;
+    if (importanceOfB && !importanceOfA) return 1;
+    if (importanceOfA && importanceOfB) return importanceOfA - importanceOfB;
+
+    return 0;
+}
