@@ -12,14 +12,17 @@ Object.entries(data['info']).map(([key, obj]) => {
     if (obj.contact) {
         userEmails = userEmails.concat(obj.contact.match(/[\\t|\\n| ]?([a-zA-Z0-9\._-]+\@[a-zA-Z]+\.(com|net))/g));
     }
-    userEmails = userEmails.filter(i => !!i && !i.endsWith('facebook.com')).map(e => e.toLowerCase().trim());
+    userEmails = userEmails
+        .filter(i => !!i && !i.endsWith('facebook.com'))
+        .map(e => e.toLowerCase().trim())
+        .sort(emailSort);
     if (userEmails.length) {
         emails[key] = Array.from(new Set(userEmails));
     }
 });
 
 fs.writeFileSync('./emails.json', JSON.stringify(emails));
-fs.writeFileSync('./emails.csv', Object.values(emails).map(es => es.sort(emailSort)[0]).join('\n'));
+fs.writeFileSync('./emails.csv', Object.values(emails).map(es => es[0]).join('\n'));
 console.log(emails, Object.keys(emails).length);
 
 function emailSort(a, b) {
