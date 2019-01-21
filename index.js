@@ -18,15 +18,12 @@ const SITE_PASSWORD = process.env.SITE_PASSWORD;
     const browser = await puppeteer.launch({headless: false});
     const page = await browser.newPage();
     page.setViewport({width: 1366, height: 768});
-    const interval = setInterval(saveData, 100000);
     const groupId = pullFromSet('group')
     if (groupId) {
         await findNewLinks(page, groupId,'group',true);
     } else {
         await findNewLinks(page, pullFromSet('user'), 'user', true)
     }
-    clearInterval(interval);
-    saveData()
 
     await browser.close();
 })();
@@ -86,6 +83,8 @@ const findNewLinks = async (page, id, pageKind = 'user', first = false) => {
         }
         info[id] = userData
     }
+
+    saveData();
 
     if (users.size) {
         const userId = pullFromSet('user')
